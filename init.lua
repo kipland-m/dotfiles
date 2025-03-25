@@ -2,6 +2,7 @@
 require('packer').startup(function(use)
     -- Packer can manage itself
     use 'wbthomason/packer.nvim'
+    -- adding test comment to test my git
 
     -- Mason for managing LSP servers
     use {
