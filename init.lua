@@ -16,6 +16,12 @@ require('packer').startup(function(use)
     -- Treesitter for better syntax highlighting
     use "nvim-treesitter/nvim-treesitter"
 
+    use {
+      'nvim-telescope/telescope.nvim', tag = '0.1.8',
+    -- or                            , branch = '0.1.x',
+      requires = { {'nvim-lua/plenary.nvim'} }
+    }
+
     -- Alpha-nvim splash screen
     use {
         'goolord/alpha-nvim',
@@ -113,10 +119,14 @@ cmp.setup.cmdline(':', {
 -- LSP setup
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
+vim.keymap.set("n", ",", vim.diagnostic.open_float, { noremap = true, silent = true })
 
 -- Configure clangd
 lspconfig.clangd.setup {
-    capabilities = capabilities
+  capabilities = capabilities,
+  cmd = { 'clangd', '--background-index', '--clang-tidy' },
+  filetypes = { 'c', 'cpp' },
+  root_dir = require('lspconfig.util').root_pattern('.clangd', 'compile_commands.json', '.git'),
 }
 
 -- Configure tsserver (JavaScript/TypeScript)
