@@ -56,8 +56,13 @@ require('packer').startup(function(use)
     -- File explorer
     use 'nvim-tree/nvim-tree.lua'
 
+    -- Image viewer
+    use 'edluffy/hologram.nvim'
+
     -- Theme
     use 'navarasu/onedark.nvim'
+    use 'marko-cerovac/material.nvim'
+
 end)
 
 -- General Neovim settings
@@ -121,6 +126,18 @@ local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 vim.keymap.set("n", ",", vim.diagnostic.open_float, { noremap = true, silent = true })
 
+lspconfig.basedpyright.setup({
+  settings = {
+    basedpyright = {
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        typeCheckingMode = "basic",
+      },
+    },
+  },
+})
+
 -- Configure clangd
 lspconfig.clangd.setup {
   capabilities = capabilities,
@@ -130,7 +147,7 @@ lspconfig.clangd.setup {
 }
 
 -- Configure tsserver (JavaScript/TypeScript)
-lspconfig.tsserver.setup {
+lspconfig.ts_ls.setup {
     on_attach = function(client, bufnr)
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts) -- Go to definition
@@ -153,12 +170,20 @@ require("nvim-web-devicons").setup {
     default = true
 }
 
+require('hologram').setup{
+    auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+}
+
 -- Onedark theme setup
 require('onedark').setup {
     style = 'dark',
     transparent = true,
 }
 require('onedark').load()
+
+require('material').setup {
+  style = 'darker'
+}
 
 -- Discord presence setup
 require("presence").setup({
