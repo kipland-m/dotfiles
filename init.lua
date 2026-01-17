@@ -134,6 +134,9 @@ lspconfig.basedpyright.setup({
         useLibraryCodeForTypes = true,
         typeCheckingMode = "basic",
       },
+      python = {
+        pythonPath = vim.fn.getcwd() .. '/.venv/bin/python3'
+      }
     },
   },
 })
