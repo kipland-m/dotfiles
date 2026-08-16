@@ -2,3 +2,4 @@
 -- https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 
 vim.opt.relativenumber = false
+vim.opt.clipboard = "unnamedplus"
