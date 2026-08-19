@@ -39,12 +39,11 @@ Other useful commands:
 
 - `:messages`
   - Show recent Neovim messages and errors
-- `:LspInfo`
-  - Show active LSP clients for the current buffer
 - `:checkhealth`
   - General Neovim health report
 - `:checkhealth vim.lsp`
-  - LSP-specific health report
+  - LSP-specific health report, including which servers attached to the current buffer
+  - Replaces `:LspInfo`, which newer nvim-lspconfig removed
 - `:close`
   - Close the current floating window or split
 
@@ -139,6 +138,8 @@ These are the main moving parts in this config:
 
 Installed/configured language tooling includes:
 
+- `clangd`
+  - C/C++, via the LazyVim `lang.clangd` extra
 - `pyright`
 - `ruff`
 - `typescript-language-server`
@@ -155,6 +156,42 @@ Notes:
 - TypeScript is configured as `ts_ls`
 - YAML includes Azure pipeline schema support for `azure-*.yml`
 
+## C/C++ (clangd)
+
+Enabled through the LazyVim `lang.clangd` extra (see `lazyvim.json`).
+
+clangd will not find a project's headers on its own. Without being told the
+include paths it reports missing includes and gives no completions, so every
+C project needs one of these at its root:
+
+- `compile_flags.txt`
+  - One flag per line, applied to every file in the project
+  - Simplest option for a hand-written Makefile
+  - Example for a vendored-raylib project:
+    - `-std=c11`
+    - `-Isrc`
+    - `-Ivendor/raylib-mingw/include`
+- `compile_commands.json`
+  - Exact per-file compile commands
+  - Emitted by CMake, or generated for a Makefile project with `bear -- make`
+  - Worth the extra step once files need different flags from each other
+
+clangd searches upward from the file being edited, so opening Neovim anywhere
+inside the project tree finds either file.
+
+With clangd attached:
+
+- `K`
+  - Hover: signature, docs, and the header a symbol comes from
+  - With no LSP attached, `K` falls back to `keywordprg` (`:Man`) instead, which
+    is why hovering a library function can report "no manual entry"
+- `gd`
+  - Jump to definition
+  - Also the quickest way to tell library code from your own: landing in a
+    vendored header means the symbol came from that library, not your source
+- `Space u h`
+  - Toggle inlay hints (parameter names shown inline at call sites)
+
 ## Useful basics
 
 - `Space`
@@ -163,7 +200,7 @@ Notes:
   - Plugin manager UI
 - `:Mason`
   - External tools installer UI
-- `:LspInfo`
+- `:checkhealth vim.lsp`
   - Check whether a server actually attached to the current file
 - `:verbose nmap {key}`
   - See what a key is mapped to and where it was defined
